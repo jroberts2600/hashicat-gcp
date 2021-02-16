@@ -5,7 +5,7 @@ provider "google" {
 }
 
 resource "google_compute_network" "hashicat" {
-  name                    = "${var.prefix}-vpc"
+  name                    = "${var.prefix}-vpc-${var.region}"
   auto_create_subnetworks = false
 }
 
@@ -57,6 +57,10 @@ resource "google_compute_instance" "hashicat" {
   }
 
   tags = ["http-server"]
+  
+  labels = {
+    name = "hashicat"
+  }
 
 }
 
@@ -91,6 +95,8 @@ resource "null_resource" "configure-cat-app" {
       "sudo chown -R ubuntu:ubuntu /var/www/html",
       "chmod +x *.sh",
       "PLACEHOLDER=${var.placeholder} WIDTH=${var.width} HEIGHT=${var.height} PREFIX=${var.prefix} ./deploy_app.sh",
+      "sudo apt -y install cowsay",
+      "cowsay Mooooooooooo!",
     ]
 
     connection {
